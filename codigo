@@ -2,45 +2,38 @@ import os
 from openpyxl import load_workbook
 from docx import Document
 
-# Ajusta estas rutas según tu sistema
-TEMPLATE_PATH = 'template.docx'
-EXCEL_PATH = 'data.xlsx'
-OUTPUT_DIR = 'output_letters'
 
+def replace_run_text(paragraph, placeholder, value):
+    for run in paragraph.runs:
+        if placeholder in run.text:
+            run.text = run.text.replace(placeholder, value)
+
+
+TEMPLATE_PATH = r"E:\VS\Python\template.docx"
+EXCEL_PATH = r"E:\VS\Python\data.xlsx"
+OUTPUT_DIR = r"E:\VS\Python\output_letters"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# Cargar Excel
 wb = load_workbook(EXCEL_PATH)
 sheet = wb.active
-
-# Leer encabezados de la primera fila
 headers = [cell.value for cell in sheet[1]]
 
-# Iterar filas desde la segunda
 for row in sheet.iter_rows(min_row=2, values_only=True):
     data = dict(zip(headers, row))
-    
-    # Cargar plantilla Word
     doc = Document(TEMPLATE_PATH)
-    
-    # Reemplazar placeholders en párrafos
+
     for para in doc.paragraphs:
         for key, val in data.items():
-            placeholder = f"<{key}>"
-            if placeholder in para.text:
-                para.text = para.text.replace(placeholder, str(val))
-    
-    # También puedes reemplazar dentro de tablas si hace falta
+            replace_run_text(para, f"<{key}>", str(val))
+
     for table in doc.tables:
         for cell in table._cells:
             for key, val in data.items():
-                placeholder = f"<{key}>"
-                if placeholder in cell.text:
-                    cell.text = cell.text.replace(placeholder, str(val))
-    
-    # Guardar documento personalizado
-    name_safe = str(data.get('Name', 'output')).replace(' ', '_')
-    output_path = os.path.join(OUTPUT_DIR, f"Letter_{name_safe}.docx")
-    doc.save(output_path)
+                replace_run_text(cell, f"<{key}>", str(val))
 
-print("Todos los documentos han sido generados con éxito.")
+    safe = "_".join(str(data.get(k, '')).strip()
+                    for k in ('nombre', 'apellido'))
+    fname = f"Letter_{safe or 'output'}.docx"
+    doc.save(os.path.join(OUTPUT_DIR, fname))
+
+print("Documentos generados.")
