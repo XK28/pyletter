@@ -1,4 +1,6 @@
 Libros de automatizacion online: https://automatetheboringstuff.com/
+Think Python: https://greenteapress.com/thinkpython2/html/thinkpython2001.html
+Otros: https://pythonbooks.org/free-books/
 
 Cómo funciona
 Carga Excel con openpyxl y extrae encabezados y datos fila por fila.
