@@ -1,3 +1,5 @@
+Libros de automatizacion online: https://automatetheboringstuff.com/
+
 Cómo funciona
 Carga Excel con openpyxl y extrae encabezados y datos fila por fila.
 
